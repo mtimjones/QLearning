@@ -5,7 +5,7 @@ DEPS = qtypes.h
 OBJS = main.o
 
 %.o: %.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) -c -g -o $@ $< $(CFLAGS)
 
 qlearn: $(OBJS)
 	$(CC) -g -o $@ $^ $(CFLAGS) -lm

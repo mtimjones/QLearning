@@ -4,7 +4,7 @@
 #define X_MAX           20
 #define Y_MAX           20
 
-#define MAX_EPOCHS	200000L // Number of epochs to run
+#define MAX_EPOCHS	100000  // Number of epochs to run
 
 #define MAX_ACTIONS     4       // Actions define 4 possible directions
 

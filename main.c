@@ -21,13 +21,13 @@ char environment[ Y_MAX ][ X_MAX ] =
  { '+','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','+' },
  { '|',' ',' ',' ',' ',' ',' ',' ',' ','#','#','#',' ','#','#','#','#','#',' ','|' },
  { '|',' ',' ',' ','#','#','#',' ',' ','#','#','#',' ','#','#','#','#','#',' ','|' },
- { '|','#',' ',' ',' ','#','#','#',' ',' ',' ',' ',' ','#','#',' ',' ',' ',' ','|' },
+ { '|','#',' ',' ',' ','#','#','#',' ',' ',' ',' ',' ','#',' ','#','#',' ',' ','|' },
  { '|','#',' ',' ',' ',' ','#','#','#','#','#','#','#','#',' ',' ',' ',' ',' ','|' },
  { '|','#',' ',' ',' ',' ','#','#','#','#','#','#','#','#',' ','#','#',' ',' ','|' },
- { '|',' ',' ',' ','#','#','#',' ',' ',' ',' ','#','#',' ',' ',' ','#','#',' ','|' },
+ { '|',' ',' ',' ','#','#','#',' ',' ',' ',' ','#','#',' ',' ','#','#','#',' ','|' },
  { '|',' ',' ','#','#','#','#','#',' ',' ',' ','#','#',' ',' ','#','#','#',' ','|' },
  { '|',' ',' ','#','#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#','#',' ','|' },
- { '|',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#','#','#',' ',' ','#','#',' ','|' },
+ { '|',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#','#','#',' ','#','#','#',' ','|' },
  { '|',' ','#',' ',' ',' ','#','#','#',' ',' ','#','#','#',' ','#','#','#','#','|' },
  { '|','#','#','#',' ',' ','#','#','#',' ',' ',' ','#','#',' ','#','$',' ',' ','|' },
  { '|','#','#','#',' ','#','#','#','#',' ',' ',' ',' ',' ',' ','#','#','#',' ','|' },
@@ -92,7 +92,7 @@ void initStateSpace( void )
 //
 // Find and cache the largest Q-value for the state.
 //
-void findMaxQ( int y, int x )
+void CalculateMaxQ( int y, int x )
 {
    stateSpace[ y ][ x ].QMax = 0.0;
 
@@ -129,14 +129,12 @@ int ChooseAgentAction( pos_t *agent, int actionSelection )
    // Choose the best action (largest Q-value)
    if ( actionSelection == EXPLOIT )
    {
-      action = 0;
-
-      for ( int i = 1 ; i < MAX_ACTIONS ; i++ )
+      for ( action = 0 ; action < MAX_ACTIONS ; action++ )
       {
-         if ( stateSpace[ agent->y ][ agent->x ].QVal[ i ] >
-              stateSpace[ agent->y ][ agent->x ].QVal[ action ] )
+         if ( stateSpace[ agent->y ][ agent->x ].QVal[ action ] ==
+              stateSpace[ agent->y ][ agent->x ].QMax )
          {
-            action = i;
+            break;
          }
       }
    }
@@ -166,7 +164,7 @@ void UpdateAgent( pos_t *agent, int action )
      LEARNING_RATE * ( reward + ( DISCOUNT_RATE * stateSpace[ newy ][ newx ].QMax) -
                         stateSpace[ agent->y ][ agent->x ].QVal[ action ] );
 
-   findMaxQ( agent->y, agent->x );
+   CalculateMaxQ( agent->y, agent->x );
 
    // Update the agent's position
    agent->x += dir[ action ].x;
@@ -230,7 +228,7 @@ int main()
    // Init the state/action Q data
    initStateSpace( );
 
-   for ( long epochs = 0 ; epochs < MAX_EPOCHS ; epochs++ )
+   for ( int epochs = 0 ; epochs < MAX_EPOCHS ; epochs++ )
    {
       // Select the action for the agent.
       int action = ChooseAgentAction( &agent, EXPLORE );
