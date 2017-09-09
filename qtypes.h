@@ -15,7 +15,6 @@ typedef struct {
 
 typedef struct {
    double QVal[ MAX_ACTIONS ];
-   double QSum;
    double QMax;
 } stateAction_t;
 

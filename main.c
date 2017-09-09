@@ -79,7 +79,6 @@ void initStateSpace( void )
    {
       for ( int x = 0 ; x < X_MAX ; x++ )
       {
-         stateSpace[ y ][ x ].QSum = 0.0;
          stateSpace[ y ][ x ].QMax = 0.0;
 
          for ( int action = 0 ; action < MAX_ACTIONS ; action++ )
@@ -90,24 +89,6 @@ void initStateSpace( void )
    }
 
    return;
-}
-
-//
-// Find and cache the largest Q value for the state.
-//
-void findMaxQ( int y, int x )
-{
-  stateSpace[ y ][ x ].QMax = 0.0;
-
-  for ( int i = 0 ; i < MAX_ACTIONS ; i++ )
-  {
-    if ( stateSpace[ y ][ x ].QVal[ i ] > stateSpace[ y ][ x ].QMax )
-    {
-      stateSpace[ y ][ x ].QMax = stateSpace[ y ][ x ].QVal[ i ];
-    }
-  }
-
-  return;
 }
 
 //
@@ -129,17 +110,17 @@ int ChooseAgentAction( pos_t *agent, int actionSelection )
 {
    int action;
 
-   // Choose the best action
+   // Choose the best action (largest Q-value)
    if ( actionSelection == EXPLOIT )
    {
-      findMaxQ( agent->y, agent->x );
+      action = 0;
 
-      for ( action = 0 ; action < MAX_ACTIONS ; action++ )
+      for ( int i = 1 ; i < MAX_ACTIONS ; i++ )
       {
-         if ( stateSpace[ agent->y ][ agent->x ].QMax == 
-              stateSpace[ agent->y ][ agent->x ].QVal[ action ])
+         if ( stateSpace[ agent->y ][ agent->x ].QVal[ i ] >
+              stateSpace[ agent->y ][ agent->x ].QVal[ action ] )
          {
-            return( action );
+            action = i;
          }
       }
    }
@@ -164,21 +145,10 @@ void UpdateAgent( pos_t *agent, int action )
    int newx = agent->x + dir[ action ].x;
    double reward = (double)getReward( environment[ newy ][ newx ] );
 
-   // Update the QMax value for the state
-   findMaxQ( newy, newx );
-
    // Evaluate Q value 
    stateSpace[ agent->y ][ agent->x ].QVal[ action ] += 
      LEARNING_RATE * ( reward + ( DISCOUNT_RATE * stateSpace[ newy ][ newx ].QMax) -
                         stateSpace[ agent->y ][ agent->x ].QVal[ action ] );
-
-   // Update the Qsum
-   stateSpace[ agent->y ][ agent->x ].QSum = 0.0;
-
-   for ( int i = 0 ; i < MAX_ACTIONS ; i++ )
-   {
-      stateSpace[ agent->y ][ agent->x ].QSum += stateSpace[ agent->y ][ agent->x ].QVal[ i ];
-   }
 
    // Update the agent's position
    agent->x += dir[ action ].x;
