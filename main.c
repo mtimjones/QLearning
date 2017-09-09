@@ -18,7 +18,6 @@ const pos_t dir[ MAX_ACTIONS ] =
 
 char environment[ Y_MAX ][ X_MAX ] =
 {
-//  0   1   2   3   4   5   6   7   8   9   0   1   2   3   4   5   6   7   8   9
  { '+','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','+' },
  { '|',' ',' ',' ',' ',' ',' ',' ',' ','#','#','#',' ','#','#','#','#','#',' ','|' },
  { '|',' ',' ',' ','#','#','#',' ',' ','#','#','#',' ','#','#','#','#','#',' ','|' },
@@ -47,7 +46,9 @@ pos_t goal =  {11, 16};
 
 stateAction_t stateSpace[ Y_MAX ][ X_MAX ];
 
-
+//
+// Return the reward value for the state
+//
 int getReward( char input )
 {
    switch( input )
@@ -69,7 +70,9 @@ int getReward( char input )
    return 0;
 }
 
-
+//
+// Initialize the Q data for the state/action space.
+//
 void initStateSpace( void )
 {
    for ( int y = 0 ; y < Y_MAX ; y++ )
@@ -89,7 +92,9 @@ void initStateSpace( void )
    return;
 }
 
-
+//
+// Find and cache the largest Q value for the state.
+//
 void findMaxQ( int y, int x )
 {
   stateSpace[ y ][ x ].QMax = 0.0;
@@ -105,7 +110,9 @@ void findMaxQ( int y, int x )
   return;
 }
 
-
+//
+// Identify whether the desired move is legal.
+//
 int legalMove( int y_state, int x_state, int action )
 {
   int y = y_state + dir[ action ].y;
@@ -115,7 +122,9 @@ int legalMove( int y_state, int x_state, int action )
   else return 1;
 }
 
-
+//
+// Choose an action based upon the selection policy.
+//
 int ChooseAgentAction( pos_t *agent, int actionSelection )
 {
    int action;
@@ -146,14 +155,16 @@ int ChooseAgentAction( pos_t *agent, int actionSelection )
    return action;
 }
 
-
+//
+// Update the agent using the Q-value function.
+//
 void UpdateAgent( pos_t *agent, int action )
 {
    int newy = agent->y + dir[ action ].y;
    int newx = agent->x + dir[ action ].x;
    double reward = (double)getReward( environment[ newy ][ newx ] );
 
-   /* Update the QMax value for the state */
+   // Update the QMax value for the state
    findMaxQ( newy, newx );
 
    // Evaluate Q value 
@@ -182,7 +193,9 @@ void UpdateAgent( pos_t *agent, int action )
    return;
 }
 
-
+//
+// Execute the agent using the exploit policy to show its path.
+//
 void ExecuteAgent( void )
 {
    pos_t agent;
@@ -217,13 +230,16 @@ void ExecuteAgent( void )
    return;
 }
 
-
+//
+// Main function for q-learning.
+//
 int main()
 {
    pos_t agent = start;
 
    srand( time( NULL ) );
 
+   // Init the state/action Q data
    initStateSpace( );
 
    for ( long epochs = 0 ; epochs < MAX_EPOCHS ; epochs++ )
