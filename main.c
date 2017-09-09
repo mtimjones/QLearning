@@ -183,7 +183,6 @@ void UpdateAgent( pos_t *agent, int action )
 }
 
 
-
 void ExecuteAgent( void )
 {
    pos_t agent;
@@ -219,7 +218,6 @@ void ExecuteAgent( void )
 }
 
 
-
 int main()
 {
    pos_t agent = start;
@@ -230,8 +228,11 @@ int main()
 
    for ( long epochs = 0 ; epochs < MAX_EPOCHS ; epochs++ )
    {
-      // Select and action and update the agent.
-      UpdateAgent( &agent, ChooseAgentAction( &agent, EXPLORE ) );
+      // Select the action for the agent.
+      int action = ChooseAgentAction( &agent, EXPLORE );
+
+      // Update the agent based upon the action.
+      UpdateAgent( &agent, action );
    }
 
    // Show the agent's path
