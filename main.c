@@ -79,8 +79,6 @@ void initStateSpace( void )
    {
       for ( int x = 0 ; x < X_MAX ; x++ )
       {
-         stateSpace[ y ][ x ].QMax = 0.0;
-
          for ( int action = 0 ; action < MAX_ACTIONS ; action++ )
          {
             stateSpace[ y ][ x ].QVal[ action ] = 0.0;
@@ -88,6 +86,24 @@ void initStateSpace( void )
       }
    }
 
+   return;
+}
+
+//
+// Find and cache the largest Q-value for the state.
+//
+void findMaxQ( int y, int x )
+{
+   stateSpace[ y ][ x ].QMax = 0.0;
+
+   for ( int i = 0 ; i < MAX_ACTIONS ; i++ )
+   {
+      if ( stateSpace[ y ][ x ].QVal[ i ] > stateSpace[ y ][ x ].QMax )
+      {
+         stateSpace[ y ][ x ].QMax = stateSpace[ y ][ x ].QVal[ i ];
+      }
+   }
+   
    return;
 }
 
@@ -149,6 +165,8 @@ void UpdateAgent( pos_t *agent, int action )
    stateSpace[ agent->y ][ agent->x ].QVal[ action ] += 
      LEARNING_RATE * ( reward + ( DISCOUNT_RATE * stateSpace[ newy ][ newx ].QMax) -
                         stateSpace[ agent->y ][ agent->x ].QVal[ action ] );
+
+   findMaxQ( agent->y, agent->x );
 
    // Update the agent's position
    agent->x += dir[ action ].x;
