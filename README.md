@@ -1,6 +1,7 @@
 # QLearning
 Reinforcement Learning / Q Learning
 
+'''
 $ make
 gcc -c -o main.o main.c -I. -std=c99 -Wall
 gcc -g -o qlearn main.o -I. -std=c99 -Wall -lm
